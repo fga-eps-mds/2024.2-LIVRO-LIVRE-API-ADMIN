@@ -1,23 +1,30 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
-import { User } from '../database/entities/user.entity';
 import { Repository } from 'typeorm';
+import * as bcrypt from 'bcrypt';
+import { SignInDto } from './dtos/signIn.dto';
+import { AdminUser } from '../database/entities/admin-user.entity';
 
 @Injectable()
 export class AuthService {
   constructor(
-    @InjectRepository(User)
-    private usersRepository: Repository<User>,
+    @InjectRepository(AdminUser)
+    private adminUsersRepository: Repository<AdminUser>,
     private jwtService: JwtService,
   ) {}
 
-  async signIn(email: string, password: string): Promise<any> {
-    const user = await this.usersRepository.createQueryBuilder().where({ email }).getOne()
-    if (!user) throw new UnauthorizedException();
-    if (user.password !== password) throw new UnauthorizedException();
+  async signIn({ email, password }: SignInDto): Promise<any> {
+    const user = await this.adminUsersRepository.findOneBy({ email });
+    if (!user)
+      throw new UnauthorizedException('Please check your login credentials');
+    if (!(await bcrypt.compare(password, user.password)))
+      throw new UnauthorizedException('Please check your login credentials');
     return {
-      accessToken: await this.jwtService.signAsync({ sub: user.id, email: user.email }),
+      accessToken: await this.jwtService.signAsync({
+        sub: user.id,
+        email: user.email,
+      }),
     };
   }
 }

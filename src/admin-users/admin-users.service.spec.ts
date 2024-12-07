@@ -1,24 +1,24 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { UsersService } from './users.service';
+import { AdminUsersService } from './admin-users.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { User } from '../database/entities/user.entity';
 import { repositoryMockFactory } from '../../test/database/utils';
+import { AdminUser } from '../database/entities/admin-user.entity';
 
-describe('UsersService', () => {
-  let service: UsersService;
+describe('AdminUsersService', () => {
+  let service: AdminUsersService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        UsersService,
+        AdminUsersService,
         {
-          provide: getRepositoryToken(User),
+          provide: getRepositoryToken(AdminUser),
           useFactory: repositoryMockFactory,
-        }
+        },
       ],
     }).compile();
 
-    service = module.get<UsersService>(UsersService);
+    service = module.get<AdminUsersService>(AdminUsersService);
   });
 
   it('should be defined', () => {
