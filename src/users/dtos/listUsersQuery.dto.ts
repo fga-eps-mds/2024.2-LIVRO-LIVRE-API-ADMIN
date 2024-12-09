@@ -7,7 +7,7 @@ export class ListUsersQueryDto {
 
   @IsOptional()
   firstName?: string;
-  
+
   @IsOptional()
   lastName?: string;
 

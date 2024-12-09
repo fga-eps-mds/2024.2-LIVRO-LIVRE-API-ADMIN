@@ -1,6 +1,4 @@
-import {
-  Injectable,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from '../database/entities/user.entity';
@@ -14,8 +12,8 @@ export class UsersService {
   ) {}
 
   async findAll(query: ListUsersQueryDto): Promise<{
-    items: User[],
-    total: number,
+    items: User[];
+    total: number;
   }> {
     const whereConditions = {};
     if (query.email) whereConditions['email'] = query.email;
@@ -23,21 +21,19 @@ export class UsersService {
     if (query.lastName) whereConditions['lastName'] = query.lastName;
     if (query.phone) whereConditions['phone'] = query.phone;
 
-    const take = query.perPage || 10
-    const skip = query.page || 0
+    const take = query.perPage || 10;
+    const skip = query.page || 0;
 
-    const [result, total] = await this.usersRepository.findAndCount(
-      {
-        where: whereConditions,
-        take: take,
-        skip: skip,
-        order: { createdAt: 'DESC' },
-      }
-    );
+    const [result, total] = await this.usersRepository.findAndCount({
+      where: whereConditions,
+      take: take,
+      skip: skip,
+      order: { createdAt: 'DESC' },
+    });
 
     return {
       items: result,
       total,
-    }
+    };
   }
 }
