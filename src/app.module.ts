@@ -4,6 +4,7 @@ import { AdminUsersModule } from './admin-users/admin-users.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
 import typeormConfig from './database/config';
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import typeormConfig from './database/config';
       useFactory: async (configService: ConfigService) =>
         configService.get('typeorm'),
     }),
+    UsersModule,
     AdminUsersModule,
     AuthModule,
   ],

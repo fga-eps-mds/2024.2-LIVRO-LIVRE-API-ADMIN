@@ -6,6 +6,7 @@ import * as bcrypt from 'bcrypt';
 import { SignInDto } from './dtos/signIn.dto';
 import { AdminUser } from '../database/entities/admin-user.entity';
 import { SignInResponseDto } from './dtos/signInResponse.dto';
+import { SignUpDto } from './dtos/signUp.dto';
 
 @Injectable()
 export class AuthService {
@@ -30,5 +31,18 @@ export class AuthService {
         expiresIn: '7d',
       }),
     };
+  }
+
+  async signUp(dto: SignUpDto): Promise<{ success: boolean }> {
+    const userExists = await this.adminUsersRepository.findOneBy({
+      email: dto.email,
+    });
+    if (userExists) throw new UnauthorizedException('Usuário já cadastrado.');
+    const user = this.adminUsersRepository.create({
+      ...dto,
+      password: await bcrypt.hash(dto.password, await bcrypt.genSalt(10)),
+    });
+    await this.adminUsersRepository.save(user);
+    return { success: true };
   }
 }
